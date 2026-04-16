@@ -70,7 +70,7 @@ body {
       padding-top: env(safe-area-inset-top, 20px);
   }
   
-  #bottom-nav {
+  .bottom-nav {
       padding-bottom: env(safe-area-inset-bottom, 20px);
       height: calc(85px + env(safe-area-inset-bottom, 0px));
   }

@@ -66,7 +66,7 @@ function login(role) {
     setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
         document.getElementById('login').style.display = 'none';
-        document.getElementById('app-main').style.display = 'block';
+        document.getElementById('app-main').style.display = 'flex';
 
         if (role === 'admin') {
             document.getElementById('admin-nav').style.display = 'flex';
