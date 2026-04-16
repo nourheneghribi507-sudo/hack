@@ -53,8 +53,22 @@ function updateUI() {
         `;
     }
 
-    // Update Security Logs (Admin Only)
-    const logs = document.getElementById('notif-panel'); // Reusing panel for logs logic
+    // Update Admin Insights (AI Agent commentary)
+    const insightsList = document.getElementById('ai-insights-list');
+    if (insightsList && clubData.summary) {
+        const insights = [
+            { agent: 'Architect', type: 'pill-architect', text: `Growth is up ${clubData.summary.growth_rate}. Focus on the Tech Symposium scaling.` },
+            { agent: 'Liaison', type: 'pill-liaison', text: `Budget of $${clubData.summary.total_budget.toLocaleString()} is optimal for Q3 marketing.` },
+            { agent: 'Sentinel', type: 'pill-sentinel', text: `2 security threats blocked in the last 24 hours. Systems stable.` }
+        ];
+
+        insightsList.innerHTML = insights.map(insight => `
+            <div class="cyber-card fade-in" style="padding: 15px; margin-bottom: 12px; border-right: 2px solid var(--primary-cyan);">
+                <div class="agent-pill ${insight.type}" style="font-size: 10px; margin-bottom: 8px;">${insight.agent}_INSIGHT</div>
+                <p style="font-size: 13px; line-height: 1.4;">${insight.text}</p>
+            </div>
+        `).join('');
+    }
 }
 
 // --- Auth & Role Flow ---
@@ -216,6 +230,14 @@ async function handleSend() {
 const sendB = document.getElementById('send-btn');
 if (sendB) sendB.onclick = handleSend;
 
+function scrollLogin(dir) {
+    const login = document.getElementById('login');
+    if (login) {
+        const scrollAmount = 150;
+        login.scrollBy(0, dir === 'up' ? -scrollAmount : scrollAmount);
+    }
+}
+
 window.login = login;
 window.showScreen = showScreen;
 window.registerForEvent = registerForEvent;
@@ -224,4 +246,18 @@ window.copyToClipboard = copyToClipboard;
 window.toggleNotifs = toggleNotifs;
 window.joinMeeting = joinMeeting;
 window.leaveMeeting = leaveMeeting;
+window.scrollLogin = scrollLogin;
+// --- Scroll Tracking ---
+const mainContent = document.getElementById('main-content');
+const progressBar = document.getElementById('scroll-progress-bar');
+
+if (mainContent && progressBar) {
+    mainContent.addEventListener('scroll', () => {
+        const winScroll = mainContent.scrollTop;
+        const height = mainContent.scrollHeight - mainContent.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + "%";
+    });
+}
+
 loadDataset();
