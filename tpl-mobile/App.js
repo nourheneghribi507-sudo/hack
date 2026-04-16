@@ -12,6 +12,9 @@ import {
 import { Theme, CyberButton, CyberCard } from './components';
 import { registerRootComponent } from 'expo';
 
+const { width, height } = Dimensions.get('window');
+const isSmallDevice = width < 375;
+
 function App() {
   const [screen, setScreen] = useState('splash');
   const [currentAgent, setCurrentAgent] = useState('architect');
@@ -49,30 +52,30 @@ function App() {
   
   const SplashScreen = () => (
     <View style={styles.container}>
-      <View style={styles.center}>
+      <ScrollView contentContainerStyle={styles.center} showsVerticalScrollIndicator={false}>
         <View style={styles.heroCircle}>
              <Text style={styles.heroText}>HELLO</Text>
-             <Text style={[styles.heroText, {color: Theme.magenta}]}>TPL</Text>
+             <Text style={[styles.heroText, {color: Theme.magenta}]}>VITAL</Text>
         </View>
         <Text style={styles.subtitle}>SECURE_ACCESS_GRANTED</Text>
         <CyberButton 
           title="ENTER MAINFRAME" 
           onPress={() => setScreen('login')}
-          style={{ marginTop: 60 }}
+          style={{ marginTop: 40, width: '100%' }}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 
   const LoginScreen = () => (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <View style={styles.loginContent}>
+      <ScrollView contentContainerStyle={styles.loginContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.h1}>WELCOME BACK</Text>
-        <Text style={styles.pSeconary}>Accessing encrypted data...</Text>
+        <Text style={styles.pSecondary}>Accessing encrypted data...</Text>
         
         <View style={styles.inputGroup}>
           <Text style={styles.label}>EMAIL ADDRESS</Text>
-          <TextInput style={styles.input} placeholder="admin@tpl.ai" placeholderTextColor="#444" />
+          <TextInput style={styles.input} placeholder="admin@vital.ai" placeholderTextColor="#444" />
         </View>
         
         <View style={styles.inputGroup}>
@@ -80,8 +83,8 @@ function App() {
           <TextInput style={styles.input} secureTextEntry={true} placeholder="••••••••" placeholderTextColor="#444" />
         </View>
         
-        <CyberButton title="LOGIN" onPress={handleLogin} />
-      </View>
+        <CyberButton title="AUTHENTICATE" onPress={handleLogin} />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 
@@ -203,57 +206,57 @@ function App() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Theme.bg },
+  root: { flex: 1, backgroundColor: Theme.bg, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
   container: { flex: 1 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
-  content: { flex: 1, padding: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 20 },
-  logo: { width: 120, height: 120, borderRadius: 60, marginBottom: 20 },
-  title: { fontSize: 40, fontWeight: '900', color: Theme.cyan, letterSpacing: 5 },
-  subtitle: { fontSize: 12, color: Theme.textSecondary, letterSpacing: 2, fontWeight: '600' },
+  center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 25 },
+  content: { flex: 1, paddingHorizontal: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25, marginTop: 25 },
+  logo: { width: 100, height: 100, borderRadius: 50, marginBottom: 20 },
+  title: { fontSize: isSmallDevice ? 32 : 40, fontWeight: '900', color: Theme.cyan, letterSpacing: 5 },
+  subtitle: { fontSize: 10, color: Theme.textSecondary, letterSpacing: 2, fontWeight: '600', textAlign: 'center' },
   heroCircle: { 
-    width: 200, height: 200, borderRadius: 100, 
+    width: width * 0.5, height: width * 0.5, borderRadius: (width * 0.5) / 2, 
     borderWidth: 1, borderColor: Theme.cyan,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 30,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 20,
     backgroundColor: 'rgba(0, 245, 212, 0.05)'
   },
-  heroText: { fontSize: 32, fontWeight: '900', color: Theme.cyan, letterSpacing: 2 },
-  h1: { fontSize: 28, fontWeight: '800', color: Theme.text },
+  heroText: { fontSize: isSmallDevice ? 24 : 32, fontWeight: '900', color: Theme.cyan, letterSpacing: 2 },
+  h1: { fontSize: isSmallDevice ? 24 : 28, fontWeight: '800', color: Theme.text },
   h2: { fontSize: 18, fontWeight: '700', color: Theme.textSecondary, marginBottom: 15 },
   p: { fontSize: 14, color: Theme.text, lineHeight: 22 },
-  pSeconary: { fontSize: 14, color: Theme.textSecondary },
-  label: { fontSize: 12, color: Theme.cyan, marginBottom: 8, fontWeight: '700' },
-  avatar: { width: 50, height: 50, borderRadius: 12, backgroundColor: '#334155', borderWidth: 2, borderColor: Theme.cyan },
+  pSecondary: { fontSize: 14, color: Theme.textSecondary, marginBottom: 30 },
+  label: { fontSize: 11, color: Theme.cyan, marginBottom: 8, fontWeight: '700' },
+  avatar: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#334155', borderWidth: 2, borderColor: Theme.cyan },
   
-  loginContent: { flex: 1, justifyContent: 'center', padding: 30 },
+  loginContent: { flexGrow: 1, justifyContent: 'center', padding: 30 },
   inputGroup: { marginBottom: 20 },
   input: { backgroundColor: 'rgba(15,23,42,0.8)', padding: 15, borderRadius: 12, color: 'white', borderWidth: 1, borderColor: Theme.border },
   
-  statGrid: { flexDirection: 'row', gap: 15 },
-  statCard: { flex: 1, padding: 15 },
-  statLabel: { fontSize: 12, color: Theme.textSecondary, marginTop: 8 },
-  statValue: { fontSize: 24, fontWeight: '800', color: Theme.text },
+  statGrid: { flexDirection: 'row', gap: 12, marginBottom: 10 },
+  statCard: { flex: 1, padding: 12 },
+  statLabel: { fontSize: 11, color: Theme.textSecondary, marginTop: 6 },
+  statValue: { fontSize: isSmallDevice ? 20 : 24, fontWeight: '800', color: Theme.text },
   
   statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' },
-  statusText: { fontSize: 10, color: '#22c55e', fontWeight: '800' },
+  statusText: { fontSize: 9, color: '#22c55e', fontWeight: '800' },
   
-  navBar: { flexDirection: 'row', height: 80, borderTopWidth: 1, borderTopColor: Theme.border, paddingBottom: 20 },
+  navBar: { flexDirection: 'row', height: 75, borderTopWidth: 1, borderTopColor: Theme.border, paddingBottom: Platform.OS === 'ios' ? 20 : 10, backgroundColor: Theme.bg },
   navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   navText: { fontSize: 10, color: Theme.textSecondary, marginTop: 4, fontWeight: '600' },
 
-  agentSelector: { flexDirection: 'row', gap: 10, padding: 20, borderBottomWidth: 1, borderBottomColor: Theme.border },
+  agentSelector: { flexDirection: 'row', gap: 10, padding: 15, borderBottomWidth: 1, borderBottomColor: Theme.border },
   agentPill: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20, borderWidth: 1, borderColor: Theme.border },
   activePill: { backgroundColor: Theme.cyan, borderColor: Theme.cyan },
   pillText: { fontSize: 10, fontWeight: '800', color: Theme.text },
 
-  chatScroll: { padding: 20, gap: 15 },
-  msg: { maxWidth: '85%', padding: 15, borderRadius: 20 },
+  chatScroll: { padding: 20, gap: 12, paddingBottom: 100 },
+  msg: { maxWidth: '85%', padding: 14, borderRadius: 18 },
   msgUser: { alignSelf: 'flex-end', backgroundColor: Theme.cyan, borderBottomRightRadius: 2 },
   msgBot: { alignSelf: 'flex-start', backgroundColor: 'rgba(15,23,42,0.8)', borderWidth: 1, borderColor: Theme.border, borderBottomLeftRadius: 2 },
   msgText: { fontSize: 14, color: 'white', lineHeight: 20 },
 
-  chatInputArea: { flexDirection: 'row', padding: 15, paddingBottom: 30, gap: 10, alignItems: 'center' },
+  chatInputArea: { flexDirection: 'row', padding: 15, paddingBottom: Platform.OS === 'ios' ? 30 : 15, gap: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: Theme.border },
   chatInput: { flex: 1, backgroundColor: 'rgba(15,23,42,0.8)', padding: 12, borderRadius: 12, color: 'white', borderWidth: 1, borderColor: Theme.border },
   sendIcon: { backgroundColor: Theme.cyan, width: 45, height: 45, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }
 });

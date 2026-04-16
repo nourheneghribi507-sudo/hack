@@ -13,6 +13,9 @@ export const Theme = {
   border: 'rgba(255, 255, 255, 0.08)',
 };
 
+const { width } = Dimensions.get('window');
+const isSmallDevice = width < 375;
+
 export const CyberButton = ({ title, onPress, style, loading }) => (
   <TouchableOpacity 
     style={[styles.button, style, loading && { opacity: 0.7 }]} 
@@ -27,7 +30,7 @@ export const CyberCard = ({ children, style, accent }) => (
   <View style={[
     styles.card, 
     style, 
-    accent && { borderLeftWidth: 4, borderLeftColor: accent }
+    accent && { borderLeftWidth: 3, borderLeftColor: accent }
   ]}>
     {children}
   </View>
@@ -36,28 +39,29 @@ export const CyberCard = ({ children, style, accent }) => (
 const styles = StyleSheet.create({
   button: {
     backgroundColor: Theme.cyan,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 14,
+    paddingVertical: isSmallDevice ? 12 : 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: Theme.cyan,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   buttonText: {
     color: Theme.bg,
     fontWeight: '800',
-    fontSize: 14,
-    letterSpacing: 1.5,
+    fontSize: isSmallDevice ? 12 : 14,
+    letterSpacing: 1,
   },
   card: {
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: 20,
+    padding: isSmallDevice ? 16 : 20,
     borderWidth: 1,
     borderColor: Theme.border,
-    marginBottom: 16,
+    marginBottom: 12,
   }
 });
