@@ -52,7 +52,7 @@ function App() {
   // --- Screen Components ---
   
   const SplashScreen = () => (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.center} showsVerticalScrollIndicator={false}>
         <View style={styles.heroCircle}>
              <Text style={styles.heroText}>HELLO</Text>
@@ -65,62 +65,68 @@ function App() {
           style={{ marginTop: 40, width: '100%' }}
         />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 
   const LoginScreen = () => (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.loginContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.h1}>WELCOME BACK</Text>
-        <Text style={styles.pSecondary}>Accessing encrypted data...</Text>
-        
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>EMAIL ADDRESS</Text>
-          <TextInput style={styles.input} placeholder="admin@vital.ai" placeholderTextColor="#444" />
-        </View>
-        
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>PASSWORD</Text>
-          <TextInput style={styles.input} secureTextEntry={true} placeholder="••••••••" placeholderTextColor="#444" />
-        </View>
-        
-        <CyberButton title="AUTHENTICATE" onPress={handleLogin} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+        <ScrollView contentContainerStyle={styles.loginContent} showsVerticalScrollIndicator={false}>
+          <Text style={styles.h1}>WELCOME BACK</Text>
+          <Text style={styles.pSecondary}>Accessing encrypted data...</Text>
+          
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>EMAIL ADDRESS</Text>
+            <TextInput style={styles.input} placeholder="admin@vital.ai" placeholderTextColor="#444" />
+          </View>
+          
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>PASSWORD</Text>
+            <TextInput style={styles.input} secureTextEntry={true} placeholder="••••••••" placeholderTextColor="#444" />
+          </View>
+          
+          <CyberButton title="AUTHENTICATE" onPress={handleLogin} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 
   const Dashboard = () => (
-    <ScrollView style={styles.content}>
-      <View style={styles.header}>
-        <View>
-          <View style={styles.statusBadge}>
-            <View style={styles.dot} />
-            <Text style={styles.statusText}>SYSTEMS ACTIVE</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <View>
+            <View style={styles.statusBadge}>
+              <View style={styles.dot} />
+              <Text style={styles.statusText}>SYSTEMS ACTIVE</Text>
+            </View>
+            <Text style={styles.h1}>Hello, <Text style={{color: Theme.cyan}}>Admin</Text></Text>
+            <Text style={styles.pSeconary}>Here is your club's pulse today.</Text>
           </View>
-          <Text style={styles.h1}>Hello, <Text style={{color: Theme.cyan}}>Admin</Text></Text>
-          <Text style={styles.pSeconary}>Here is your club's pulse today.</Text>
+          <View style={styles.avatar} />
         </View>
-        <View style={styles.avatar} />
-      </View>
 
-      <View style={styles.statGrid}>
-        <CyberCard style={styles.statCard}>
-          <Calendar color={Theme.cyan} size={24} />
-          <Text style={styles.statLabel}>Active Events</Text>
-          <Text style={styles.statValue}>12</Text>
-        </CyberCard>
-        <CyberCard style={styles.statCard}>
-          <Shield color={Theme.magenta} size={24} />
-          <Text style={styles.statLabel}>Threats Blocked</Text>
-          <Text style={styles.statValue}>04</Text>
-        </CyberCard>
-      </View>
+        <View style={styles.statGrid}>
+          <CyberCard style={styles.statCard}>
+            <Calendar color={Theme.cyan} size={24} />
+            <Text style={styles.statLabel}>Active Events</Text>
+            <Text style={styles.statValue}>12</Text>
+          </CyberCard>
+          <CyberCard style={styles.statCard}>
+            <Shield color={Theme.magenta} size={24} />
+            <Text style={styles.statLabel}>Threats Blocked</Text>
+            <Text style={styles.statValue}>04</Text>
+          </CyberCard>
+        </View>
 
-      <Text style={[styles.h2, {marginTop: 20}]}>AI_INSIGHTS</Text>
-      <CyberCard accent={Theme.cyan}>
-        <Text style={styles.p}>Based on your history, the Architect suggests increasing workshop frequency for Q3.</Text>
-      </CyberCard>
-    </ScrollView>
+        <Text style={[styles.h2, {marginTop: 20}]}>AI_INSIGHTS</Text>
+        <CyberCard accent={Theme.cyan}>
+          <Text style={styles.p}>Based on your history, the Architect suggests increasing workshop frequency for Q3.</Text>
+        </CyberCard>
+        
+        <View style={{height: 100}} />
+      </ScrollView>
+    </SafeAreaView>
   );
 
   const Chat = () => (
@@ -178,8 +184,8 @@ function App() {
   };
 
   return (
-    <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       {renderContent()}
       
       {['dashboard', 'chat'].includes(screen) && (
@@ -202,7 +208,7 @@ function App() {
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
