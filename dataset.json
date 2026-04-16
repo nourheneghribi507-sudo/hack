@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "total_events": 24,
+    "total_budget": 12500,
+    "active_members": 450,
+    "growth_rate": "12%"
+  },
+  "past_events": [
+    { "name": "Annual Gala", "date": "2025-11-15", "attendance": 120, "budget": 2000, "status": "Success" },
+    { "name": "Code Night", "date": "2025-12-05", "attendance": 45, "budget": 300, "status": "Success" },
+    { "name": "Career Fair", "date": "2026-01-20", "attendance": 200, "budget": 1500, "status": "Warning" }
+  ],
+  "upcoming_events": [
+    { "name": "Tech Symposium", "date": "2026-05-23", "target_attendance": 300, "projected_budget": 5000 },
+    { "name": "AI Workshop", "date": "2026-06-15", "target_attendance": 80, "projected_budget": 800 }
+  ],
+  "security_insights": [
+    { "timestamp": "2026-04-15 11:42:00", "source": "192.168.1.104", "type": "Brute Force", "status": "Blocked" },
+    { "timestamp": "2026-04-16 02:15:00", "source": "10.0.0.52", "type": "Port Scan", "status": "Mitigated" }
+  ]
+}

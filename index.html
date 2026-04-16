@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>tpl | AI Club Manager</title>
+    
+    <!-- PWA / Mobile Meta -->
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="assets/tpl.jpeg">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        /* Specific page layouts */
+        #main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 90px;
+            /* Spacer for bottom nav */
+        }
+
+        #bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 85px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 5px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            gap: 5px;
+            padding: 10px 0;
+        }
+
+        .nav-item.active {
+            color: var(--primary-cyan);
+            filter: drop-shadow(0 0 5px rgba(0, 245, 212, 0.5));
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Dash styles */
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            margin-top: 10px;
+        }
+
+        .profile-img {
+            width: 450;
+            height: 45;
+            width: 45px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-cyan);
+        }
+
+        .agent-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 8px;
+            gap: 6px;
+        }
+
+        .pill-architect {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .pill-liaison {
+            background: rgba(217, 70, 239, 0.2);
+            color: #e879f9;
+            border: 1px solid rgba(217, 70, 239, 0.3);
+        }
+
+        .pill-sentinel {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 15px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        /* Chat styles */
+        #chat-messages {
+            height: calc(100vh - 250px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--secondary-blue));
+            color: var(--bg-color);
+            border-bottom-right-radius: 4px;
+            font-weight: 600;
+        }
+
+        .chat-input-container {
+            position: absolute;
+            bottom: 90px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-cyan);
+        }
+
+        /* Vault */
+        .vault-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-container">
+        <!-- Splash Screen -->
+        <div id="splash" class="screen active"
+            style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+            <img src="assets/tpl.jpeg" alt="TPL Logo" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 20px;" class="fade-in">
+            <h1 style="font-family: 'Orbitron', sans-serif; font-size: 42px; letter-spacing: 6px;"
+                class="text-gradient-cyan">TPL</h1>
+            <p style="color: var(--text-secondary); margin-top: 5px; letter-spacing: 2px; font-weight: 600;">YOUR CLUB, SMARTER</p>
+            <div style="margin-top: 50px;" class="fade-in">
+                <button class="cyber-button" onclick="showScreen('login')">Enter Mainframe</button>
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login" class="screen" style="padding: 40px 20px;">
+            <h2 style="font-family: 'Orbitron', sans-serif; font-size: 28px; margin-bottom: 10px;">Welcome Back</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">Please authenticate to continue.</p>
+
+            <div style="margin-bottom: 20px;">
+                <label
+                    style="display: block; font-size: 12px; color: var(--primary-cyan); margin-bottom: 8px;">EMAIL ADDRESS</label>
+                <input type="text" placeholder="admin@tpl.ai" class="chat-input" style="width: 100%;">
+            </div>
+            <div style="margin-bottom: 40px;">
+                <label
+                    style="display: block; font-size: 12px; color: var(--primary-cyan); margin-bottom: 8px;">PASSWORD</label>
+                <input type="password" placeholder="••••••••" class="chat-input" style="width: 100%;">
+            </div>
+
+            <div style="margin-bottom: 30px; display: flex; gap: 10px;">
+                 <button class="cyber-button" onclick="login('admin')" style="flex: 1; font-size: 12px; padding: 10px;">Admin</button>
+                 <button class="cyber-button" onclick="login('member')" style="flex: 1; font-size: 12px; padding: 10px; background: var(--primary-magenta); shadow-color: var(--primary-magenta);">Member</button>
+            </div>
+        </div>
+
+        <!-- Main Content App -->
+        <div id="app-main" style="display: none; height: 100%;">
+            <div id="main-content">
+
+                <!-- Dashboard -->
+                <div id="dashboard" class="screen">
+                    <div class="dash-header">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e;"></span>
+                            <span style="font-size: 10px; color: #22c55e; font-weight: 800; letter-spacing: 1px;">SYSTEMS ACTIVE</span>
+                        </div>
+                        <h2 style="font-size: 28px; font-family: var(--font-title);">Hello, <span class="text-gradient-cyan">Admin</span></h2>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Here is what's happening today</p>
+                    </div>
+                    <div class="profile-img"
+                        style="background: url('assets/avatar.jfif'); background-size: cover; background-position: center; border: 2px solid var(--primary-cyan); box-shadow: var(--accent-glow);">
+                    </div>
+                </div>
+
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <i data-lucide="calendar" style="color: var(--primary-cyan);" size="20"></i>
+                            <p style="color: var(--text-secondary); font-size: 12px; margin-top: 8px;">Active Events</p>
+                            <p class="stat-value">12</p>
+                        </div>
+                        <div class="stat-card">
+                            <i data-lucide="shield" style="color: var(--primary-magenta);" size="20"></i>
+                            <p style="color: var(--text-secondary); font-size: 12px; margin-top: 8px;">Threats Blocked
+                            </p>
+                            <p class="stat-value">04</p>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 15px; font-size: 18px; font-family: var(--font-title); color: var(--text-secondary);">AI_INSIGHT_MAINFRAME</h3>
+                    <div id="ai-insights-list">
+                        <!-- Dynamic insights generated from dataset.json will appear here -->
+                        <div class="cyber-card" style="text-align: center; color: var(--text-secondary); opacity: 0.5;">
+                            Initializing data analysis core...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat -->
+                <div id="chat" class="screen">
+                    <div
+                        style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                        <div class="agent-pill pill-architect" style="cursor: pointer;">Architect</div>
+                        <div class="agent-pill pill-liaison" style="cursor: pointer; opacity: 0.5;">Liaison</div>
+                        <div class="agent-pill pill-sentinel" style="cursor: pointer; opacity: 0.5;">Sentinel</div>
+                    </div>
+                    <div id="chat-messages">
+                        <div class="message bot">
+                            Hello Admin. I am the Architect Agent. How can I assist you with event planning today?
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="user-input" class="chat-input" placeholder="Ask Architect anything...">
+                        <button id="send-btn" class="cyber-button" style="padding: 12px;"><i data-lucide="send"
+                                size="20"></i></button>
+                    </div>
+                </div>
+
+                <!-- Events -->
+                <div id="events" class="screen">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2>Events</h2>
+                        <button class="cyber-button" style="padding: 8px 16px; font-size: 10px;">+ New Event</button>
+                    </div>
+
+                    <div class="cyber-card" style="border-right: 4px solid var(--primary-cyan);">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--primary-cyan); font-weight: 800; font-size: 12px;">MAY 23,
+                                2026</span>
+                            <span
+                                style="background: rgba(0, 245, 212, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 10px;">CONFIRMED</span>
+                        </div>
+                        <h3 style="margin: 10px 0 5px 0;">Annual Tech Gala</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px;"><i data-lucide="map-pin"
+                                size="12"></i> Grand Ballroom</p>
+                        <div
+                            style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px;">
+                            <div class="agent-pill pill-architect" style="margin: 0; font-size: 10px;">ARCHITECT
+                                SUGGESTION</div>
+                            <p style="font-size: 11px; color: #60a5fa;">Add a 'Networking Hour' at 6 PM.</p>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card" style="border-right: 4px solid var(--primary-magenta);">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--primary-magenta); font-weight: 800; font-size: 12px;">JUN 15,
+                                2026</span>
+                            <span
+                                style="background: rgba(217, 70, 239, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 10px;">PLANNING</span>
+                        </div>
+                        <h3 style="margin: 10px 0 5px 0;">AI Workshop Series</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px;"><i data-lucide="map-pin"
+                                size="12"></i> Innovation Lab</p>
+                    </div>
+                </div>
+
+                <!-- Vault -->
+                <div id="vault" class="screen">
+                    <h2 style="margin-bottom: 20px;">Secure <span class="text-gradient-cyan">Vault</span></h2>
+                    <div class="chat-input-container" style="position: static; margin-bottom: 25px;">
+                        <input type="text" class="chat-input" style="width: 100%;" placeholder="Search archives...">
+                    </div>
+
+                    <div class="vault-item">
+                        <div style="background: rgba(59, 130, 246, 0.2); padding: 10px; border-radius: 10px;">
+                            <i data-lucide="file-text" style="color: #3b82f6;"></i>
+                        </div>
+                        <div>
+                            <p style="font-weight: 600;">Sponsorship_Deck.pdf</p>
+                            <p style="color: var(--text-secondary); font-size: 12px;">Apr 12, 2026 • 2.4 MB</p>
+                        </div>
+                    </div>
+
+                    <div class="vault-item">
+                        <div style="background: rgba(16, 185, 129, 0.2); padding: 10px; border-radius: 10px;">
+                            <i data-lucide="file-spreadsheet" style="color: #10b981;"></i>
+                        </div>
+                        <div>
+                            <p style="font-weight: 600;">Budget_FY26.xlsx</p>
+                            <p style="color: var(--text-secondary); font-size: 12px;">Mar 28, 2026 • 1.1 MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Screen (Admin Only) -->
+                <div id="security" class="screen">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2 style="font-size: 24px; font-family: var(--font-title);">SECURITY_SENTINEL</h2>
+                        <button class="cyber-button" onclick="triggerSecurityAlert()" style="font-size: 10px; padding: 8px 12px; border-color: #ef4444; color: #fca5a5;">Simulate Attack</button>
+                    </div>
+                    
+                    <div id="security-status-card" class="cyber-card" style="margin-bottom: 25px; border-color: #22c55e;">
+                         <div style="display: flex; align-items: center; gap: 10px;">
+                              <div class="spinner" style="border-top-color: #22c55e; width: 14px; height: 14px;"></div>
+                              <span style="font-size: 13px; font-weight: 800; color: #22c55e;">SYSTEM_SHIELD_ACTIVE</span>
+                         </div>
+                         <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Scanning the club's mainframe for lateral movement...</p>
+                    </div>
+
+                    <div id="security-alerts-container">
+                        <!-- Dynamic alerts will appear here -->
+                         <div class="cyber-card" style="opacity: 0.5; text-align: center;">No active threats detected.</div>
+                    </div>
+                </div>
+
+                <!-- Member Dashboard (User Only) -->
+                <div id="member-dashboard" class="screen">
+                    <div class="dash-header">
+                        <div>
+                             <h2 style="font-size: 28px; font-family: var(--font-title);">Hi, <span class="text-gradient-cyan">Alex</span></h2>
+                             <p style="color: var(--text-secondary); font-size: 14px;">Explore what's happening today</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                             <div onclick="toggleNotifs()" style="position: relative; cursor: pointer;">
+                                  <i data-lucide="bell" color="white" size="20"></i>
+                                  <span style="position: absolute; top: -5px; right: -5px; width: 8px; height: 8px; background: var(--primary-magenta); border-radius: 50%;"></span>
+                             </div>
+                             <div class="profile-img" style="background: var(--card-bg); border: 1px solid var(--border-color); width: 40px; height: 40px;">
+                                  <i data-lucide="user" color="white" size="18"></i>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div id="notif-panel" style="display: none; margin-bottom: 20px;" class="fade-in">
+                         <div class="cyber-card" style="padding: 15px; border-color: var(--primary-magenta);">
+                              <p style="font-size: 11px; color: var(--text-secondary);">[09:15 AM] NEW_INSIGHT</p>
+                              <p style="font-size: 13px; margin-top: 5px;">Your registration for <strong>Tech Symposium</strong> is confirmed!</p>
+                         </div>
+                    </div>
+
+                    <div class="cyber-card" style="margin-top: 20px; border-left: 4px solid var(--primary-magenta);">
+                        <span style="font-size: 10px; color: var(--primary-magenta); font-weight: 800;">TOP_RECOMMENDATION</span>
+                        <h3 style="margin-top: 10px; font-size: 18px;">AI Hackathon 2026</h3>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">Based on your interest in <strong>React</strong>, we recommend this event.</p>
+                        <button class="cyber-button" onclick="registerForEvent('AI Hackathon 2026')" style="margin-top: 15px; width: 100%; font-size: 11px; padding: 10px;">Register Now</button>
+                    </div>
+                    <div id="event-feed">
+                        <!-- Injected by app.js -->
+                    </div>
+                </div>
+
+                <!-- Smart Meeting Room (Member) -->
+                <div id="meeting-room" class="screen">
+                    <h2 style="font-size: 24px; font-family: var(--font-title); margin-bottom: 20px;">COLLAB_STATION</h2>
+                    <div class="cyber-card" style="border-left: 4px solid var(--primary-cyan);">
+                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                              <div>
+                                   <h3 style="font-size: 18px;">Weekly Sync: AI Hackathon</h3>
+                                   <p style="color: var(--text-secondary); font-size: 12px; margin-top: 5px;">Today @ 04:00 PM</p>
+                              </div>
+                              <span class="agent-pill" style="background: #22c55e22; color: #22c55e; border-color: #22c55e;">LIVE_NOW</span>
+                         </div>
+                         <div style="margin-top: 15px; display: flex; gap: -10px;">
+                              <div class="profile-img" style="width: 28px; height: 28px; border: 1px solid white; background: #334155;"></div>
+                              <div class="profile-img" style="width: 28px; height: 28px; border: 1px solid white; background: #475569; margin-left: -10px;"></div>
+                              <div class="profile-img" style="width: 28px; height: 28px; border: 1px solid white; background: #1e293b; margin-left: -10px;"></div>
+                              <span style="font-size: 12px; color: var(--text-secondary); margin-left: 10px; align-self: center;">+ 12 online</span>
+                         </div>
+                         <button class="cyber-button" onclick="joinMeeting()" style="width: 100%; margin-top: 20px;">Join Station</button>
+                    </div>
+
+                    <h3 style="margin: 25px 0 15px; font-size: 16px; font-family: var(--font-title); color: var(--text-secondary);">POST_SYNC_ARCHIVE</h3>
+                    <div id="meeting-ai-summary" class="cyber-card" style="opacity: 0.8;">
+                         <p style="font-size: 12px; text-align: center;">Join the live session to generate AI summary.</p>
+                    </div>
+                </div>
+
+                <!-- Liaison Agent Screen (Admin) -->
+                <div id="liaison-hub" class="screen">
+                    <h2 style="font-size: 24px; font-family: var(--font-title); margin-bottom: 20px;">LIAISON_HUB</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Describe your event to generate professional communication materials.</p>
+                    
+                    <div style="margin-bottom: 25px;">
+                         <textarea id="liaison-input" class="chat-input" style="width: 100%; height: 80px; padding: 15px;" placeholder="Ex: React workshop for 50 people next month..."></textarea>
+                         <button class="cyber-button" onclick="generateLiaisonContent()" style="width: 100%; margin-top: 15px;">Generate Content</button>
+                    </div>
+
+                    <div id="liaison-results" style="display: none;">
+                         <div class="cyber-card fade-in" style="margin-bottom: 20px; border-left: 4px solid var(--primary-cyan);">
+                              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                   <span style="font-size: 10px; color: var(--primary-cyan); font-weight: 800;">INSTAGRAM_POST</span>
+                                   <button onclick="copyToClipboard('insta-text')" style="background: none; border: none; color: var(--text-secondary);"><i data-lucide="copy" size="14"></i></button>
+                              </div>
+                              <p id="insta-text" style="font-size: 13px; line-height: 1.6;"></p>
+                         </div>
+
+                         <div class="cyber-card fade-in" style="border-left: 4px solid var(--primary-magenta);">
+                              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                   <span style="font-size: 10px; color: var(--primary-magenta); font-weight: 800;">SPONSORSHIP_EMAIL</span>
+                                   <button onclick="copyToClipboard('email-text')" style="background: none; border: none; color: var(--text-secondary);"><i data-lucide="copy" size="14"></i></button>
+                              </div>
+                              <p id="email-text" style="font-size: 13px; line-height: 1.6;"></p>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Navigation (Admin) -->
+            <nav id="admin-nav" class="bottom-nav">
+                <div class="nav-item active" onclick="showScreen('dashboard', this)">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item" onclick="showScreen('chat', this)">
+                    <i data-lucide="message-square"></i>
+                    <span>AI Chat</span>
+                </div>
+                <div class="nav-item" onclick="showScreen('liaison-hub', this)">
+                    <i data-lucide="share-2"></i>
+                    <span>Liaison</span>
+                </div>
+                <div class="nav-item" onclick="showScreen('security', this)">
+                    <i data-lucide="shield"></i>
+                    <span>Secur</span>
+                </div>
+            </nav>
+
+            <!-- Navigation (Member) -->
+            <nav id="member-nav" class="bottom-nav" style="display: none;">
+                <div class="nav-item active" onclick="showScreen('member-dashboard', this)">
+                    <i data-lucide="compass"></i>
+                    <span>Explore</span>
+                </div>
+                <div class="nav-item" onclick="showScreen('meeting-room', this)">
+                    <i data-lucide="video"></i>
+                    <span>Collab</span>
+                </div>
+                <div class="nav-item" onclick="showScreen('member-events', this)">
+                    <i data-lucide="calendar"></i>
+                    <span>Events</span>
+                </div>
+                <div class="nav-item" onclick="showScreen('chat', this)">
+                    <i data-lucide="message-square"></i>
+                    <span>Help</span>
+                </div>
+            </nav>
+
+            <!-- Live Meeting Modal -->
+            <div id="live-meeting-modal" style="display: none; position: fixed; inset: 0; background: var(--bg-color); z-index: 2000; padding: 20px;" class="fade-in">
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                      <h2 id="meeting-timer" style="font-family: monospace; color: var(--primary-cyan); font-size: 20px;">00:15:42</h2>
+                      <button onclick="leaveMeeting()" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800;">LEAVE</button>
+                 </div>
+
+                 <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px;">
+                      <div class="cyber-card" style="height: 150px; background: #1e293b; border-color: var(--primary-cyan); display: flex; align-items: center; justify-content: center;">
+                           <span style="font-size: 10px; color: var(--primary-cyan); position: absolute; top: 10px; left: 10px;">YOU (Admin)</span>
+                           <i data-lucide="user" size="40" color="white"></i>
+                      </div>
+                      <div class="cyber-card" style="height: 150px; background: #334155; display: flex; align-items: center; justify-content: center;">
+                           <span style="font-size: 10px; color: var(--text-secondary); position: absolute; top: 10px; left: 10px;">Liaison AI</span>
+                           <div class="spinner" style="width: 20px; height: 20px; border-top-color: var(--primary-magenta);"></div>
+                      </div>
+                 </div>
+
+                 <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 40px;">
+                      <div class="profile-img" style="width: 60px; height: 60px; background: var(--card-bg); border-color: var(--border-color);"><i data-lucide="mic-off"></i></div>
+                      <div class="profile-img" style="width: 60px; height: 60px; background: var(--card-bg); border-color: var(--border-color);"><i data-lucide="video"></i></div>
+                      <div class="profile-img" style="width: 60px; height: 60px; background: var(--card-bg); border-color: var(--border-color);"><i data-lucide="share"></i></div>
+                 </div>
+
+                 <div class="cyber-card" style="border-left: 4px solid var(--primary-cyan);">
+                      <span style="font-size: 10px; color: var(--primary-cyan); font-weight: 800;">REALTIME_TRANSCRIPT</span>
+                      <p id="meeting-transcript" style="font-size: 13px; margin-top: 10px; font-style: italic; color: var(--text-secondary);">Waiting for signal...</p>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

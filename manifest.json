@@ -1,0 +1,23 @@
+{
+  "name": "TPL AI Club Manager",
+  "short_name": "TPL",
+  "description": "AI-powered Club Management Mainframe",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/tpl.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/tpl.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
