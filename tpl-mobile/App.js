@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, Text, View, ScrollView, TextInput, 
   Image, TouchableOpacity, SafeAreaView, StatusBar, 
-  KeyboardAvoidingView, Platform, Dimensions 
+  KeyboardAvoidingView, Platform, useWindowDimensions 
 } from 'react-native';
 import { 
   LayoutDashboard, MessageSquare, Calendar, 
@@ -12,10 +12,11 @@ import {
 import { Theme, CyberButton, CyberCard } from './components';
 import { registerRootComponent } from 'expo';
 
-const { width, height } = Dimensions.get('window');
-const isSmallDevice = width < 375;
-
 function App() {
+  const { width, height } = useWindowDimensions();
+  const isSmallDevice = width < 380;
+  const isMediumDevice = width >= 380 && width < 480;
+
   const [screen, setScreen] = useState('splash');
   const [currentAgent, setCurrentAgent] = useState('architect');
   const [messages, setMessages] = useState([]);
@@ -208,32 +209,36 @@ function App() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Theme.bg, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
   container: { flex: 1 },
-  center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 25 },
-  content: { flex: 1, paddingHorizontal: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25, marginTop: 25 },
-  logo: { width: 100, height: 100, borderRadius: 50, marginBottom: 20 },
-  title: { fontSize: isSmallDevice ? 32 : 40, fontWeight: '900', color: Theme.cyan, letterSpacing: 5 },
-  subtitle: { fontSize: 10, color: Theme.textSecondary, letterSpacing: 2, fontWeight: '600', textAlign: 'center' },
+  center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: '8%' },
+  content: { flex: 1, paddingHorizontal: '5%' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25, marginTop: 25, alignItems: 'center' },
+  logo: { width: width * 0.25, height: width * 0.25, borderRadius: (width * 0.25) / 2, marginBottom: 20 },
+  title: { fontSize: isSmallDevice ? 32 : 38, fontWeight: '900', color: Theme.cyan, letterSpacing: 5 },
+  subtitle: { fontSize: 10, color: Theme.textSecondary, letterSpacing: 2, fontWeight: '600', textAlign: 'center', lineHeight: 16 },
   heroCircle: { 
-    width: width * 0.5, height: width * 0.5, borderRadius: (width * 0.5) / 2, 
-    borderWidth: 1, borderColor: Theme.cyan,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 20,
-    backgroundColor: 'rgba(0, 245, 212, 0.05)'
+    width: width * 0.55, height: width * 0.55, borderRadius: (width * 0.55) / 2, 
+    borderWidth: 1.5, borderColor: Theme.cyan,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 25,
+    backgroundColor: 'rgba(0, 245, 212, 0.05)',
+    ...Platform.select({
+      android: { elevation: 10 },
+      ios: { shadowColor: Theme.cyan, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 15 }
+    })
   },
-  heroText: { fontSize: isSmallDevice ? 24 : 32, fontWeight: '900', color: Theme.cyan, letterSpacing: 2 },
-  h1: { fontSize: isSmallDevice ? 24 : 28, fontWeight: '800', color: Theme.text },
+  heroText: { fontSize: isSmallDevice ? 24 : 30, fontWeight: '900', color: Theme.cyan, letterSpacing: 2 },
+  h1: { fontSize: isSmallDevice ? 22 : 26, fontWeight: '800', color: Theme.text, lineHeight: 32 },
   h2: { fontSize: 18, fontWeight: '700', color: Theme.textSecondary, marginBottom: 15 },
   p: { fontSize: 14, color: Theme.text, lineHeight: 22 },
   pSecondary: { fontSize: 14, color: Theme.textSecondary, marginBottom: 30 },
   label: { fontSize: 11, color: Theme.cyan, marginBottom: 8, fontWeight: '700' },
-  avatar: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#334155', borderWidth: 2, borderColor: Theme.cyan },
+  avatar: { width: 42, height: 42, borderRadius: 12, backgroundColor: '#334155', borderWidth: 2, borderColor: Theme.cyan },
   
-  loginContent: { flexGrow: 1, justifyContent: 'center', padding: 30 },
-  inputGroup: { marginBottom: 20 },
-  input: { backgroundColor: 'rgba(15,23,42,0.8)', padding: 15, borderRadius: 12, color: 'white', borderWidth: 1, borderColor: Theme.border },
+  loginContent: { flexGrow: 1, justifyContent: 'center', padding: '8%' },
+  inputGroup: { marginBottom: 20, width: '100%' },
+  input: { backgroundColor: 'rgba(15,23,42,0.8)', padding: 15, borderRadius: 12, color: 'white', borderWidth: 1, borderColor: Theme.border, fontSize: 16 },
   
-  statGrid: { flexDirection: 'row', gap: 12, marginBottom: 10 },
-  statCard: { flex: 1, padding: 12 },
+  statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 15 },
+  statCard: { flex: 1, minWidth: '45%', padding: 12 },
   statLabel: { fontSize: 11, color: Theme.textSecondary, marginTop: 6 },
   statValue: { fontSize: isSmallDevice ? 20 : 24, fontWeight: '800', color: Theme.text },
   
@@ -241,23 +246,41 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' },
   statusText: { fontSize: 9, color: '#22c55e', fontWeight: '800' },
   
-  navBar: { flexDirection: 'row', height: 75, borderTopWidth: 1, borderTopColor: Theme.border, paddingBottom: Platform.OS === 'ios' ? 20 : 10, backgroundColor: Theme.bg },
-  navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  navText: { fontSize: 10, color: Theme.textSecondary, marginTop: 4, fontWeight: '600' },
+  navBar: { 
+    flexDirection: 'row', 
+    height: Platform.OS === 'ios' ? 85 : 65, 
+    borderTopWidth: 1, 
+    borderTopColor: Theme.border, 
+    paddingBottom: Platform.OS === 'ios' ? 25 : 0, 
+    backgroundColor: Theme.bg,
+    alignItems: 'center'
+  },
+  navItem: { flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%' },
+  navText: { fontSize: 9, color: Theme.textSecondary, marginTop: 4, fontWeight: '700' },
 
-  agentSelector: { flexDirection: 'row', gap: 10, padding: 15, borderBottomWidth: 1, borderBottomColor: Theme.border },
+  agentSelector: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, padding: 15, borderBottomWidth: 1, borderBottomColor: Theme.border },
   agentPill: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20, borderWidth: 1, borderColor: Theme.border },
   activePill: { backgroundColor: Theme.cyan, borderColor: Theme.cyan },
   pillText: { fontSize: 10, fontWeight: '800', color: Theme.text },
 
-  chatScroll: { padding: 20, gap: 12, paddingBottom: 100 },
-  msg: { maxWidth: '85%', padding: 14, borderRadius: 18 },
+  chatScroll: { padding: '5%', gap: 12, paddingBottom: 110 },
+  msg: { maxWidth: '85%', padding: 14, borderRadius: 16 },
   msgUser: { alignSelf: 'flex-end', backgroundColor: Theme.cyan, borderBottomRightRadius: 2 },
   msgBot: { alignSelf: 'flex-start', backgroundColor: 'rgba(15,23,42,0.8)', borderWidth: 1, borderColor: Theme.border, borderBottomLeftRadius: 2 },
   msgText: { fontSize: 14, color: 'white', lineHeight: 20 },
 
-  chatInputArea: { flexDirection: 'row', padding: 15, paddingBottom: Platform.OS === 'ios' ? 30 : 15, gap: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: Theme.border },
-  chatInput: { flex: 1, backgroundColor: 'rgba(15,23,42,0.8)', padding: 12, borderRadius: 12, color: 'white', borderWidth: 1, borderColor: Theme.border },
-  sendIcon: { backgroundColor: Theme.cyan, width: 45, height: 45, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }
+  chatInputArea: { 
+    flexDirection: 'row', 
+    paddingHorizontal: 15, 
+    paddingTop: 12,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 15, 
+    gap: 10, 
+    alignItems: 'center', 
+    borderTopWidth: 1, 
+    borderColor: Theme.border,
+    backgroundColor: Theme.bg
+  },
+  chatInput: { flex: 1, backgroundColor: 'rgba(15,23,42,0.8)', padding: 12, borderRadius: 12, color: 'white', borderWidth: 1, borderColor: Theme.border, fontSize: 15 },
+  sendIcon: { backgroundColor: Theme.cyan, width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }
 });
 registerRootComponent(App);
